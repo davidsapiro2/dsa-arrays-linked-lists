@@ -40,11 +40,25 @@ class LLStr {
   /** push(val): add new value to end of list. */
 
   push(val: string): void {
+    const newNode = new NodeStr(val);
+
+    if (this.head === null) this.head = newNode;
+    if (this.tail !== null) this.tail.next = newNode;
+    this.tail = newNode;
   }
 
   /** unshift(val): add new value to start of list. */
 
   unshift(val: string): void {
+    const newNode = new NodeStr(val);
+
+    if (this.head !== null) {
+      newNode.next = this.head;
+      this.head = newNode;
+    } else {
+      this.head = newNode;
+      this.tail = newNode;
+    }
   }
 
   /** pop(): return & remove last item.
@@ -52,8 +66,20 @@ class LLStr {
    * Throws IndexError on empty list.
    **/
 
-  pop(): string {
-    return "x";
+  pop(): string | IndexError {
+    if (this.head === null) return new IndexError("List is empty.");
+
+    const poppedNode = this.tail;
+    this.tail = null;
+
+    let current: NodeStr | null = this.head;
+    while (current !== null) {
+      current = current.next;
+    }
+
+    this.tail = current;
+
+    return poppedNode!.val;
   }
 
   /** shift(): return & remove first item.
