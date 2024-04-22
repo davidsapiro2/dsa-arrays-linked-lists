@@ -1,7 +1,6 @@
 /** IndexError: raised when index not found. */
 
-class IndexError extends Error {
-}
+class IndexError extends Error {}
 
 /**
  * NodeStr: node for a singly-linked list of string.
@@ -45,6 +44,7 @@ class LLStr {
     if (this.head === null) this.head = newNode;
     if (this.tail !== null) this.tail.next = newNode;
     this.tail = newNode;
+    this.length++;
   }
 
   /** unshift(val): add new value to start of list. */
@@ -59,6 +59,7 @@ class LLStr {
       this.head = newNode;
       this.tail = newNode;
     }
+    this.length++;
   }
 
   /** pop(): return & remove last item.
@@ -66,20 +67,25 @@ class LLStr {
    * Throws IndexError on empty list.
    **/
 
-  pop(): string | IndexError {
-    if (this.head === null) return new IndexError("List is empty.");
+  pop(): string {
+    if (this.head === null || this.tail === null)
+      throw new IndexError("List is empty.");
 
-    const poppedNode = this.tail;
-    this.tail = null;
+    const poppedVal = this.tail.val;
+    this.length--;
 
     let current: NodeStr | null = this.head;
-    while (current !== null) {
-      current = current.next;
+    for (let i = 0; i < this.length - 1; i++) {
+      current = current!.next;
     }
-
     this.tail = current;
 
-    return poppedNode!.val;
+    if (this.length === 0) {
+      this.head = null;
+      this.tail = null;
+    }
+
+    return poppedVal;
   }
 
   /** shift(): return & remove first item.
@@ -88,7 +94,13 @@ class LLStr {
    **/
 
   shift(): string {
-    return "x";
+    if (this.head === null) throw new IndexError("List is empty.");
+
+    const shiftNode = this.head;
+    this.head = shiftNode.next;
+
+    this.length--;
+    return shiftNode.val;
   }
 
   /** getAt(idx): get val at idx.
@@ -97,7 +109,17 @@ class LLStr {
    **/
 
   getAt(idx: number): string {
-    return "x";
+    let current = this.head;
+    let i = 0;
+
+    while (current !== null) {
+      if (i === idx) {
+        return current.val;
+      }
+      current = current.next;
+      i++;
+    }
+    throw new IndexError("No item at index.");
   }
 
   /** setAt(idx, val): set val at idx to val.
@@ -106,6 +128,17 @@ class LLStr {
    **/
 
   setAt(idx: number, val: string): void {
+    let current = this.head;
+    let i = 0;
+
+    while (current !== null) {
+      if (i === idx) {
+        current.val = val;
+      }
+      current = current.next;
+      i++;
+    }
+    throw new IndexError("No item at index.");
   }
 
   /** insertAt(idx, val): add node w/val before idx.
@@ -114,6 +147,20 @@ class LLStr {
    **/
 
   insertAt(idx: number, val: string): void {
+    if (idx < this.length - 1 || this.head === null) {
+      throw new IndexError("Index not found.");
+    }
+
+    const newNode = new NodeStr(val);
+
+    let current = this.head;
+
+    for (let i = 0; i < idx - 1; i++) {
+      current = current.next as NodeStr;
+    }
+    newNode.next = current.next;
+    current.next = newNode;
+    this.length++;
   }
 
   /** removeAt(idx): return & remove item at idx,
@@ -140,9 +187,4 @@ class LLStr {
   }
 }
 
-
-export {
-  IndexError,
-  LLStr,
-  NodeStr,
-};
+export { IndexError, LLStr, NodeStr };
