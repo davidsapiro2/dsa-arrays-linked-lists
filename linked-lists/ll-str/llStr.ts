@@ -1,6 +1,6 @@
 /** IndexError: raised when index not found. */
 
-class IndexError extends Error { }
+class IndexError extends Error {}
 
 /**
  * NodeStr: node for a singly-linked list of string.
