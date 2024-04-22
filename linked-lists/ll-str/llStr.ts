@@ -1,6 +1,6 @@
 /** IndexError: raised when index not found. */
 
-class IndexError extends Error {}
+class IndexError extends Error { }
 
 /**
  * NodeStr: node for a singly-linked list of string.
@@ -100,6 +100,8 @@ class LLStr {
     this.head = shiftNode.next;
 
     this.length--;
+    if (this.length === 0) this.tail = null;
+
     return shiftNode.val;
   }
 
@@ -128,12 +130,21 @@ class LLStr {
    **/
 
   setAt(idx: number, val: string): void {
-    let current = this.head;
+    if (this.head === null) {
+      const newNode = new NodeStr(val);
+      this.head = newNode;
+      this.tail = newNode;
+      this.length++;
+      return;
+    }
+
+    let current: NodeStr | null = this.head;
     let i = 0;
 
     while (current !== null) {
       if (i === idx) {
         current.val = val;
+        return;
       }
       current = current.next;
       i++;
@@ -147,19 +158,40 @@ class LLStr {
    **/
 
   insertAt(idx: number, val: string): void {
-    if (idx < this.length - 1 || this.head === null) {
+    if (idx > this.length || idx < 0) {
       throw new IndexError("Index not found.");
+    }
+
+    // if list is empty
+    if (this.head === null) {
+      const newNode = new NodeStr(val);
+      this.head = newNode;
+      this.tail = newNode;
+      this.length++;
+      return;
+    }
+
+    // if adding at end of list
+    if (this.length === idx) {
+      const newNode = new NodeStr(val);
+      this.tail = newNode;
+      this.length++;
+      return;
     }
 
     const newNode = new NodeStr(val);
 
     let current = this.head;
-
     for (let i = 0; i < idx - 1; i++) {
       current = current.next as NodeStr;
     }
+
     newNode.next = current.next;
     current.next = newNode;
+
+    if (idx === 0) {
+      this.head = newNode;
+    }
     this.length++;
   }
 
@@ -169,7 +201,31 @@ class LLStr {
    **/
 
   removeAt(idx: number): string {
-    return "x";
+    if (idx >= this.length || idx < 0 || this.head === null) {
+      throw new IndexError("Index not found.");
+    }
+
+    if (idx === this.length - 1) {
+      return this.pop();
+    }
+
+    let current: NodeStr | null = this.head;
+    for (let i = 0; i < idx; i++) {
+      current = current!.next;
+    }
+    const removedNext = current!.next;
+    const removedVal = current!.val;
+    current = null;
+
+    current = this.head;
+    for (let i = 0; i < idx - 1; i++) {
+      current = current!.next;
+    }
+    current!.next = removedNext;
+
+    this.length--;
+
+    return removedVal;
   }
 
   /** toArray (useful for tests!) */
